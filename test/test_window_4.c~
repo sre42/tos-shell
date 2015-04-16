@@ -8,7 +8,7 @@
  */
 void test_window_4()
 {
-    WINDOW test_window = {0, 20,  80, 25, 0, 0, ' '};
+    WINDOW test_window = {5, 3, 10, 5, 0, 0, ' '};
     int i, j;
 
     test_reset();

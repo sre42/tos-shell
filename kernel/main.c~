@@ -21,6 +21,6 @@ void kernel_main()
     init_com();
     init_keyb();
     init_shell();
-		//kprintf("Entering while loop inside main");
+		kprintf("Entering while loop inside main");
     while (1);
 }
