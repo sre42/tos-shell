@@ -1,50 +1,129 @@
 #include <kernel.h>
+static WINDOW shell_window = {0, 10,  80, 25, 0, 0, ' '};
+char currentCommandBuffer[80];//max line length
 
 
-void omarShellProcess(PROCESS self, PARAM param){
-	char ch;
-	int shell_window_height=0;
-	
-	Keyb_Message msg;
-	//kprintf("Inside Shell process...");
-	WINDOW shell_window = {0, 20,  80, 25, 0, 0, ' '};
-	clear_window(kernel_window);
+/**
+ * Function that prints Author information upon entering about as a shell command
+ */
+ void printAbout(){
+ 	wprintf(&shell_window,"Brought to you by Omar - oshaikh@mail.sfsu.edu ;)\n");
+ }
+
+ /**
+  * Function that prints all possible commands for the user
+  */
+ void printHelp(){
+ 	wprintf(&shell_window,"Welcome to HELP\n");
+ 	wprintf(&shell_window,"Following are the list of commands that you may use:\n");
+ 	wprintf(&shell_window,"help  				 - for displaying help information\n");
+ 	wprintf(&shell_window,"ps     				 - list all processes\n");
+ 	wprintf(&shell_window,"cls    				 - clear window\n");
+ 	wprintf(&shell_window,"echo (argument)       - clear window\n");
+ 	wprintf(&shell_window,"wait (argument)       - clear window\n");
+ }
+
+/**
+ * Function that clears the shell window
+ */
+void clearShellWindow(){
+	clear_window(&shell_window);
+}
+
+/**
+ * Function that prints the argument passed into the shell command echo
+ */
+void echoShell(){
+
+}
+
+/**
+ * Function that sleeps for the duration passed as an argument
+ */
+void sleepShell(){
+
+}
+
+
+/**
+ * FUnction to clear the buffer contents
+ */
+clrBuffer(){
+	for (int i = 0; i < 80; ++i)
+	{
+		currentCommandBuffer[i] = 0;
+	}
+
+}
+
+
+
+
+
+
+
+/**
+ * Entry point for the main Shell Process
+ */
+ void tosShellProcess(PROCESS self, PARAM param){
+
+ 	int shell_window_height=19;
+
+
+
+ 	char ch;
+ 	Keyb_Message msg;
+
+
+
+ 	clear_window(kernel_window);
+ 	wprintf(&shell_window,"WELCOME TO THE TOS SHELL\n");
+
+	/**
+	*Start of main loop
+	**/
 	while(1){
-		kprintf("Inside while inside shell process");
-		output_string(&shell_window,"#~ROOT");
-		shell_window_height++;
-		//msg.key_buffer = &ch;
-		//send(keyb_port, &msg);
-		//output_char(kernel_window, ch);
 		
-		//kprintf("%c",ch);
-		//poke_w(0xb8000, ch);
+		output_char(&shell_window,'#');
+		
+
+		shell_window_height++;
 		while(1){
-		msg.key_buffer = &ch;
-		send(keyb_port, &msg);
-		//kprintf("%c",ch);
-		if(ch == '\r'){
-				kprintf("return");
+
+			msg.key_buffer = &ch;
+			send(keyb_port, &msg);
+			switch(ch){
+				case 13:
+					wprintf(&shell_window, "\n");
+					output_char(&shell_window,'#');
+					break;
+				default:
+					wprintf(&shell_window, "%c", ch);
+					break;
+
+			}
+			/*if(ch == '\r'){
 				shell_window.cursor_x = 0;
 				shell_window.cursor_y++;
-				if(shell_window_height==4){
-				scroll_window(&shell_window);
-				shell_window_height--;
+				if(shell_window_height==19){
+					scroll_window(&shell_window);
+					shell_window_height--;
 				}
 				break;
 				
-		}else {
-			 	kprintf("else");
+			}else {
+
 				output_char(&shell_window,ch);
-			}
-		}
+			}*/
 		}
 	}
-
-void init_shell()
-{
-  //kprintf("Creating process...");
-	create_process(omarShellProcess,5,0,"Shell");
-	//kprintf("Resigning");
-	resign();
 }
+
+
+ void init_shell()
+ {
+
+ 	create_process(tosShellProcess,5,0,"Shell");
+
+ 	resign();
+ }
