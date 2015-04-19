@@ -48,8 +48,9 @@ void sleepShell(){
 /**
  * FUnction to clear the buffer contents
  */
-clrBuffer(){
-	for (int i = 0; i < 80; ++i)
+void clrBuffer(){
+	int i;
+	for ( i= 0; i < 80; ++i)
 	{
 		currentCommandBuffer[i] = 0;
 	}
