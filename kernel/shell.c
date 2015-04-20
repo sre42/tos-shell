@@ -20,8 +20,8 @@ int i=0;
  	wprintf(&shell_window,"help                  - for displaying help information\n");
  	wprintf(&shell_window,"ps                    - list all processes\n");
  	wprintf(&shell_window,"cls                   - clear window\n");
- 	wprintf(&shell_window,"echo (argument)       - clear window\n");
- 	wprintf(&shell_window,"wait (argument)       - clear window\n");
+ 	wprintf(&shell_window,"echo {string}       - Echo the string passed\n");
+ 	wprintf(&shell_window,"wait {duration}       - Sleep for duration passed\n");
  }
 /**
  * Function that prints the processes information
@@ -41,14 +41,29 @@ void clearShellWindow(){
  * Function that prints the argument passed into the shell command echo
  */
 void echoShell(){
-
+	char* toEcho = cmdBuffer+5;
+	wprintf(&shell_window,toEcho);
+	wprintf(&shell_window,"\n");
 }
 
 /**
- * Function that sleeps for the duration passed as an argument
+ * Function that slseeps for the duration passed as an argument
  */
 void sleepShell(){
-
+	char* duration = cmdBuffer+5;
+	//To convert it into int.
+	int num=0;
+	while(*duration != '\0'){
+		if (*duration >= '0' && *duration <= '9'){
+			num = num * 10 + *duration - '0';
+		}else break;
+		duration++;
+	}
+	wprintf(&shell_window,"Sleeping for Duration:");
+	wprintf(&shell_window,cmdBuffer+5);
+	sleep(num);
+	wprintf(&shell_window,"\n");
+	wprintf(&shell_window,"Just Woke up!\n");
 }
 
 
@@ -94,10 +109,14 @@ void executeCmd(){
 		printAbout();
 	}else if(mystrcmp(cmd,"cls")){
 		clearShellWindow();
-	}else if(mystrcmp(cmd,"echo")){
+	}else if(mystrcmp(cmd,"echo ")){
 		echoShell();
-	}else if(mystrcmp(cmd,"wait")){
+	}else if(mystrcmp(cmd,"echo")){
+		wprintf(&shell_window,"Invalid command! enter echo {string}\n");
+	}else if(mystrcmp(cmd,"wait ")){
 		sleepShell();
+	}else if(mystrcmp(cmd,"wait")){
+		wprintf(&shell_window,"Invalid command! enter wait {duration}\n");
 	}else if(mystrcmp(cmd,"ps")){
 		printAllProcesses();
 	}else{
