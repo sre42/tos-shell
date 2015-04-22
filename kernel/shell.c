@@ -1,5 +1,6 @@
 #include <kernel.h>
 static WINDOW shell_window = {0, 10,  80, 15, 0, 0, ' '};
+static WINDOW train_window=  {0, 0, 80, 10, 0, 0, ' '};
 char cmdBuffer[80];//currentCommandBuffer[max line length]
 int i=0;
 
