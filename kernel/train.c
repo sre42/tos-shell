@@ -27,7 +27,7 @@ void send_ToCom(char* string){
 	char* temp;
 
 	str_concat(command,string);
-	str_concat(command,"\015")
+	str_concat(command,"\015");
 	
 
 	msg.output_buffer =command;
