@@ -23,6 +23,7 @@ int i=0;
  	wprintf(&shell_window,"cls                   - clear window\n");
  	wprintf(&shell_window,"echo {string}       - Echo the string passed\n");
  	wprintf(&shell_window,"wait {duration}       - Sleep for duration passed\n");
+ 	wprintf(&shell_window,"train 					-Start the train App\n");
  }
 /**
  * Function that prints the processes information
@@ -67,6 +68,12 @@ void sleepShell(){
 	wprintf(&shell_window,"Just Woke up!\n");
 }
 
+/**
+ * Func to Start Train Function
+ */
+void start_train(){
+	init_train(&train_window);
+}
 
 /**
  * FUnction to clear the buffer contents
@@ -120,6 +127,8 @@ void executeCmd(){
 		wprintf(&shell_window,"Invalid command! enter wait {duration}\n");
 	}else if(mystrcmp(cmd,"ps")){
 		printAllProcesses();
+	}else if(mystrcmp(cmd,"train")){
+		start_train();
 	}else{
 		wprintf(&shell_window,"Invalid command! enter help for information\n");
 	}
@@ -160,6 +169,9 @@ void executeCmd(){
 			send(keyb_port, &msg);
 
 			switch(ch){
+				/*
+				checking for backspace
+				 */
 				case '\b':
                     if (i == 0)
                         continue;
@@ -178,7 +190,9 @@ void executeCmd(){
 					break;
 				default:
 					cmdBuffer[i] = ch;
-					
+					/*
+					Checking for overflow...
+					 */
 					if(i<78){
 						i++;
 						wprintf(&shell_window, "%c", ch);
