@@ -178,9 +178,15 @@ void executeCmd(){
 					break;
 				default:
 					cmdBuffer[i] = ch;
-					i++;
-					wprintf(&shell_window, "%c", ch);
+					
+					if(i<78){
+						i++;
+						wprintf(&shell_window, "%c", ch);
+					}
+
+					
 					break;
+					
 
 			}
 			//executeCmd();
