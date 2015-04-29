@@ -153,7 +153,7 @@ int get_switch_status(char* c){
 	msg.output_buffer = cmd;
    	msg.len_input_buffer = len;
    	msg.input_buffer = input;
-   	clear_train_buffer();
+   	
    	//clear_train_buffer();
    	sleep(100);
    	send(com_port,&msg);
@@ -169,8 +169,7 @@ void config1(){
 	change_speed('4');
 	setSwitch('4','R');
 	setSwitch('3','G');
-	int i;
-	i=get_switch_status('1');
+	//clear_train_buffer();
 	while(!get_switch_status('1'));
 	change_speed('0');
 }
