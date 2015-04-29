@@ -38,10 +38,26 @@ void str_concat(char* s1, char* s2){
 }
 
 void send_ToCom(char* string){
+
+
+	char clrbuff[5];
 	char command[15];
+
+
 	COM_Message msg;
 	char* temp;
+	//clear_train_buffer();
 	command[0]= '\0';
+
+	clrbuff[0] = 'R';
+	clrbuff[1] = '\0';
+	str_concat(clrbuff,"\015");
+	msg.output_buffer =clrbuff;
+   	msg.len_input_buffer = 0;
+   	msg.input_buffer = temp;
+   		sleep(sleep_ticks);
+   	send(com_port,&msg);
+
 	str_concat(command,string);
 	str_concat(command,"\015");
 	
@@ -50,7 +66,7 @@ void send_ToCom(char* string){
    	msg.len_input_buffer = 0;
    	msg.input_buffer = temp;
 
-   	//clear_train_buffer();
+   	
    	sleep(sleep_ticks);
    	send(com_port,&msg);
 
@@ -139,6 +155,8 @@ returned.
  */
 int get_switch_status(char* c){
 	char cmd[10];
+	char clrbuff[5];
+	clear_train_buffer();
 	cmd[0] = 'C';
 	cmd[1] = c;
 	cmd[2] = '\0';
@@ -147,7 +165,17 @@ int get_switch_status(char* c){
 	COM_Message msg;
 	char* input;
 	int len;
+	char* temp;
 
+	//clear
+	clrbuff[0] = 'R';
+	clrbuff[1] = '\0';
+	str_concat(clrbuff,"\015");
+	msg.output_buffer =clrbuff;
+   	msg.len_input_buffer = 0;
+   	msg.input_buffer = temp;
+   	sleep(sleep_ticks);
+   	send(com_port,&msg);
 
 
 	msg.output_buffer = cmd;
