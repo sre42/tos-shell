@@ -52,7 +52,10 @@ void echoShell(){
  * Function that slseeps for the duration passed as an argument
  */
 void sleepShell(){
-	char* duration = cmdBuffer+5;
+	char timePtr[10];
+	ignoreWhiteSpaces(timePtr,5);
+	//char* duration = cmdBuffer+5;
+	char* duration = timePtr;
 	//To convert it into int.
 	int num=0;
 	while(*duration != '\0'){
@@ -62,17 +65,35 @@ void sleepShell(){
 		duration++;
 	}
 	wprintf(&shell_window,"Sleeping for Duration:");
-	wprintf(&shell_window,cmdBuffer+5);
+	wprintf(&shell_window,timePtr);
 	sleep(num);
 	wprintf(&shell_window,"\n");
 	wprintf(&shell_window,"Just Woke up!\n");
 }
+/**
+ * This function stores the whitespaced removed argument from the command buffer starting at index passed
+ * @param s   pointer to the array inwhich the argument has to be stored
+ * @param num Index of the argument inside the command buffer
+ */
+void ignoreWhiteSpaces(char* s,int num){
+	int i=0;
+	i+=num;
+
+	while(*(cmdBuffer+i)==' '||*(cmdBuffer+i)=='\t')	i++;
+	while(*(cmdBuffer+i)!='\0'){
+	 *s=*(cmdBuffer+i);
+	 s++;
+	 i++;
+	}
+	*s='\0';
+}
+
 
 /**
  * Func to Start Train Function
  */
 void start_train(){
-	//init_train(&train_window);
+	init_train(&train_window);
 }
 
 /**
@@ -111,6 +132,7 @@ BOOL mystrcmp(char* cmd1, char* cmd2){
  */
 void executeCmd(){
 	char* cmd = &cmdBuffer[0];
+	char arg[10];
 	if(mystrcmp(cmd,"help")){
 		printHelp();
 	}else if(mystrcmp(cmd,"about")){
@@ -127,8 +149,18 @@ void executeCmd(){
 		wprintf(&shell_window,"Invalid command! enter wait {duration}\n");
 	}else if(mystrcmp(cmd,"ps")){
 		printAllProcesses();
-	}else if(mystrcmp(cmd,"train")){
+	}else if(mystrcmp(cmd,"train ")){
+		
+		ignoreWhiteSpaces(arg,6);
+		if(mystrcmp(arg,"auto")){
 		start_train();
+		}else if(mystrcmp(arg,"stop")){
+			wprintf(&shell_window,"Train Stopping!\n");
+		}else if(mystrcmp(arg,"go")){
+			wprintf(&shell_window,"Train is on the GO!\n");
+		} else{
+			wprintf(&shell_window,"Entered wrong command, enter train go/stop/auto\n");
+		}
 	}else{
 		wprintf(&shell_window,"Invalid command! enter help for information\n");
 	}
@@ -153,7 +185,7 @@ void executeCmd(){
 
  	clear_window(kernel_window);
  	wprintf(&shell_window,"WELCOME TO THE TOS SHELL\n");
- 	init_train(&train_window);
+ 	//init_train(&train_window);// For automatic startup of Train App
 	/**
 	*Start of main loop
 	**/
