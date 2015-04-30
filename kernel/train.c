@@ -4,8 +4,8 @@
 #define TRAIN_NUMBER "20\0"
 
 static WINDOW train_window=  {0, 0, 80, 10, 0, 0, ' '};
-int sleep_ticks = 10;
-
+int sleep_ticks = 100;
+int config =0;
 void clear_train_buffer(void);
 void init_switches(void);
 void str_concat(char*,char*);
@@ -42,10 +42,10 @@ void send_ToCom(char* string){
 
 	char clrbuff[5];
 	char command[15];
-
-
+	command[0] = '\0';
+	char temp[10];
 	COM_Message msg;
-	char* temp;
+	/*char* temp;
 	//clear_train_buffer();
 	command[0]= '\0';
 
@@ -57,13 +57,13 @@ void send_ToCom(char* string){
    	msg.input_buffer = temp;
    		sleep(sleep_ticks);
    	send(com_port,&msg);
-
+*/
 	str_concat(command,string);
 	str_concat(command,"\015");
 	
-
+	int len;
 	msg.output_buffer =command;
-   	msg.len_input_buffer = 0;
+   	msg.len_input_buffer = len;
    	msg.input_buffer = temp;
 
    	
@@ -155,35 +155,22 @@ returned.
  */
 int get_switch_status(char* c){
 	char cmd[10];
-	char clrbuff[5];
 	clear_train_buffer();
 	cmd[0] = 'C';
-	cmd[1] = c;
-	cmd[2] = '\0';
+	cmd[1] = '\0';
+	str_concat(cmd,c);
 	str_concat(cmd,"\015");
 	
 	COM_Message msg;
 	char* input;
-	int len;
-	char* temp;
-
-	//clear
-	clrbuff[0] = 'R';
-	clrbuff[1] = '\0';
-	str_concat(clrbuff,"\015");
-	msg.output_buffer =clrbuff;
-   	msg.len_input_buffer = 0;
-   	msg.input_buffer = temp;
-   	sleep(sleep_ticks);
-   	send(com_port,&msg);
-
+	int len=3;
+	
 
 	msg.output_buffer = cmd;
    	msg.len_input_buffer = len;
    	msg.input_buffer = input;
    	
-   	//clear_train_buffer();
-   	sleep(100);
+   	sleep(10);
    	send(com_port,&msg);
    	if(msg.input_buffer[1]=='1') return 1;
    		else return 0;
@@ -191,50 +178,108 @@ int get_switch_status(char* c){
 
 
 /**
- * configuration 1 without Zamboni
+ * configuration 1 & 2 without Zamboni
  */
 void config1(){
 	change_speed('4');
 	setSwitch('4','R');
 	setSwitch('3','G');
 	//clear_train_buffer();
-	while(!get_switch_status('1'));
+	while(!get_switch_status("1"));
 	change_speed('0');
+	change_direction();
+	change_speed('4');
+	setSwitch('5','R');
+	setSwitch('6','R');
+	while(!get_switch_status("8"));
+	change_speed('0');
+	wprintf(&train_window,"At home base!!!\n");
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/** 
- * debugging raw command!
+/**
+ * configuration 3 without Zamboni
  */
-void debug_command(){
-	char cmd[6];
-	cmd[0] = 'L';
-	cmd[1] = '2';
-	cmd[2] = '0';
-	cmd[3] = 'S';
-	cmd[4] = '5';
-	cmd[5] = '\0';
-	
-	send_ToCom(cmd);
+void config3(){
+	change_speed('4');
+	setSwitch('5','R');
+	setSwitch('6','G');
+	setSwitch('7','R');
+	while(!get_switch_status("12"));
+	change_speed('0');
+	change_direction();
+	change_speed('4');
+	while(!get_switch_status("13"));
+	change_speed('0');
+	setSwitch('8','G');
+	change_direction();
+	change_speed('4');
+	setSwitch('5','G');
+	setSwitch('4','R');
+	setSwitch('3','R');
+	while(!get_switch_status("5"));
+	change_speed('0');
+	wprintf(&train_window,"At home base!!!\n");
+	}
+/**
+ * configuration 4 without Zamboni
+ */
+void config4(){
+
+	change_speed('4');
+	setSwitch('5','G');
+	setSwitch('8','G');
+	setSwitch('9','G');
+	while(!get_switch_status("14"));
+	change_speed('0');
+	change_speed('4');
+	while(!get_switch_status("16"));
+	sleep(1000);
+	change_speed('0');
+
+	change_direction();
+	change_speed('4');
+	setSwitch('4','R');
+	setSwitch('3','R');
+	while(!get_switch_status("5"));
+	change_speed('0');
+	wprintf(&train_window,"At home base!!!\n");
 }
+/**
+ * Checks for Zamboni
+ * @return [description]
+ */
+int check_zamboni(){
+	int i;
+	for(i=0;i<20;i++){
+		sleep(30);
+		if(get_switch_status("6")){
+			return 10;
+		}
+		sleep(30);
+		if(get_switch_status("14")){
+			return 14;
+		}
+	}
+	return 0;
+}
+/**
+ * Runs checks to determine the type of config
+ * @return [description]
+ */
+int check_config(){
+	if((get_switch_status("8"))&&(get_switch_status("2"))){
+		//config1 & config2
+		config= 1;
+	}else if((get_switch_status("5"))&&(get_switch_status("11"))){
+		//config3
+		config= 3;
+	}else if((get_switch_status("5"))&&(get_switch_status("16"))){
+		//config4
+		config= 4;
+	}
+
+	return config;
+}
+
 /**
  * Main Train Process
  */
@@ -243,15 +288,49 @@ void train_process(PROCESS self, PARAM param)
 	wprintf(&train_window,"Starting Train Application\n");
 	
 	wprintf(&train_window,"Initializing Switches\n");
-	//sleep(sleep_ticks);
-	clear_train_buffer();
-	init_switches();
-	config1();
 
-	//debug_command();
-	//change_speed('2');
-	//setSwitch('5','G');
-	//setSwitch('4','G');
+	init_switches();
+
+	clear_train_buffer();
+	//config4();
+	int zam=0;
+	/*zam = check_zamboni();
+	if(zam){
+		wprintf(&train_window,"Zamboni Found\n");
+
+	}else wprintf(&train_window,"Zamboni not found\n");
+	*/
+	switch(check_config()){
+		case 1:
+			wprintf(&train_window,"Config is 1 or 2\n");
+			if(!zam) config1();
+			break;
+		case 3:
+			wprintf(&train_window,"Config is 3\n");
+			if(!zam) config3();
+			break;
+		case 4:
+			wprintf(&train_window,"Config is 4\n");
+			if(!zam) config4();
+			break;
+	}
+	
+
+	//config1 with zamboni - working
+/*
+	if(zam){
+	setSwitch('7','R');
+	setSwitch('2','R');
+	while(!get_switch_status("10"));
+	setSwitch('1','R');
+	config1();
+	}
+*/
+
+
+
+
+
 	wprintf(&train_window,"Shutting down Train App\n");
 	while(1);
 }
@@ -262,5 +341,5 @@ void train_process(PROCESS self, PARAM param)
  */
 void init_train(WINDOW* wnd)
 {
-	create_process(train_process, 4, 0, "Train Process");
+	create_process(train_process, 5, 0, "Train Process");
 }

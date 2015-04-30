@@ -72,7 +72,7 @@ void sleepShell(){
  * Func to Start Train Function
  */
 void start_train(){
-	init_train(&train_window);
+	//init_train(&train_window);
 }
 
 /**
@@ -153,7 +153,7 @@ void executeCmd(){
 
  	clear_window(kernel_window);
  	wprintf(&shell_window,"WELCOME TO THE TOS SHELL\n");
-
+ 	init_train(&train_window);
 	/**
 	*Start of main loop
 	**/
@@ -226,6 +226,6 @@ void executeCmd(){
  {
 
  	create_process(tosShellProcess,5,0,"Shell");
-
+ 	//init_train(&train_window);
  	resign();
  }
