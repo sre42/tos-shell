@@ -60,7 +60,8 @@ void send_ToCom(char* string){
 /**
  * A function that takes the raw Train Command as argument and sends it into COM
  * @param cmd [Raw command passed (from shell)]
- * @return 
+ * @param length [Length of expected input]
+ * @param input  [pointer to the input]
  */
 void train_raw(char* cmd,int length,char* input){
 	char command[15];
