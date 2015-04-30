@@ -87,8 +87,41 @@ void ignoreWhiteSpaces(char* s,int num){
 	}
 	*s='\0';
 }
+/**
+ * This function stores the whitespaced removed argument from the command buffer starting at index passed
+ * @param s   pointer to the array inwhich the argument has to be stored
+ * @param num Index of the argument inside the command buffer
+ * @return Returns the current counter in the command array
+ */
+int ignoreWhiteSpacesReturn(char* s,int num){
+	int i=0;
+	i+=num;
 
+	while(*(cmdBuffer+i)==' '||*(cmdBuffer+i)=='\t')	i++;
+	while(*(cmdBuffer+i)!='\0'){
+	 *s=*(cmdBuffer+i);
+	 s++;
+	 i++;
+	}
+	*s='\0';
+	return i;
+}
+/**
+ * Makes the train GO
+ */
+void train_go(){
 
+	change_speed('4');
+
+}
+/**
+ * Makes the train STOP
+ */
+void train_stop(){
+
+	change_speed('0');
+
+}
 /**
  * Func to Start Train Function
  */
@@ -133,6 +166,7 @@ BOOL mystrcmp(char* cmd1, char* cmd2){
 void executeCmd(){
 	char* cmd = &cmdBuffer[0];
 	char arg[10];
+	char raw[10];
 	if(mystrcmp(cmd,"help")){
 		printHelp();
 	}else if(mystrcmp(cmd,"about")){
@@ -150,16 +184,34 @@ void executeCmd(){
 	}else if(mystrcmp(cmd,"ps")){
 		printAllProcesses();
 	}else if(mystrcmp(cmd,"train ")){
-		
-		ignoreWhiteSpaces(arg,6);
+		int count;
+		count = ignoreWhiteSpacesReturn(arg,6);
 		if(mystrcmp(arg,"auto")){
 		start_train();
 		}else if(mystrcmp(arg,"stop")){
 			wprintf(&shell_window,"Train Stopping!\n");
+			train_stop();
 		}else if(mystrcmp(arg,"go")){
 			wprintf(&shell_window,"Train is on the GO!\n");
-		} else{
-			wprintf(&shell_window,"Entered wrong command, enter train go/stop/auto\n");
+			train_go();
+		} else if(mystrcmp(arg,"help")){
+			wprintf(&shell_window,"Train HELP:::\n");
+			wprintf(&shell_window,"train auto 				-Starts automatic train algorithm(requires immediate startup to wok properly)\n");
+			wprintf(&shell_window,"train stop 				-Stops the train\n");
+			wprintf(&shell_window,"train go 				-Makes the train go\n");
+			wprintf(&shell_window,"***BUGGY**train raw command-Executes the raw command passed as argument\n");
+			wprintf(&shell_window,"train help 				-displays train help\n");
+			wprintf(&shell_window,"help 				-displays Shell help\n");
+		}else if(mystrcmp(arg,"raw")){
+			/*
+				//RAW COMMAND
+				ignoreWhiteSpaces(raw,count);
+				int length = 3;
+				char input[5];
+				train_raw(raw,0,input);
+				*/
+		}else {
+			wprintf(&shell_window,"Entered wrong command, enter \"train help\" for details\n");
 		}
 	}else{
 		wprintf(&shell_window,"Invalid command! enter help for information\n");

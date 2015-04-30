@@ -40,7 +40,6 @@ void str_concat(char* s1, char* s2){
 void send_ToCom(char* string){
 
 
-	char clrbuff[5];
 	char command[15];
 	command[0] = '\0';
 	char temp[10];
@@ -58,8 +57,27 @@ void send_ToCom(char* string){
    	send(com_port,&msg);
 
 }
+/**
+ * A function that takes the raw Train Command as argument and sends it into COM
+ * @param cmd [Raw command passed (from shell)]
+ * @return 
+ */
+void train_raw(char* cmd,int length,char* input){
+	char command[15];
+	command[0] = '\0';
+	COM_Message msg;
+	str_concat(command,cmd);
+	str_concat(command,"\015");
+	
+	msg.output_buffer =command;
+   	msg.len_input_buffer = length;
+   	msg.input_buffer = input;
 
+   	
+   	sleep(sleep_ticks);
+   	send(com_port,&msg);
 
+}
 /**
  * M#x{CR}
  * #: switch ID
@@ -283,6 +301,7 @@ void train_process(PROCESS self, PARAM param)
 	clear_train_buffer();
 	//config4();
 	int zam=0;
+	int config=0;
 	zam = check_zamboni();
 	if(zam){
 		wprintf(&train_window,"Zamboni Found\n");
@@ -293,8 +312,8 @@ void train_process(PROCESS self, PARAM param)
 		}
 
 	}else wprintf(&train_window,"Zamboni not found\n");
-	
-	switch(check_config()){
+	config=check_config();
+	switch(config){
 		case 1:
 			wprintf(&train_window,"Config is 1 or 2\n");
 			if(!zam) config1();
@@ -311,15 +330,25 @@ void train_process(PROCESS self, PARAM param)
 	
 
 	//config1 with zamboni - working
-/*
-	if(zam==){
-	setSwitch('7','R');
-	setSwitch('2','R');
-	while(!get_switch_status("10"));
-	setSwitch('1','R');
-	config1();
+
+	if(zam==7&&config==1){
+		wprintf(&train_window,"Config 1 With Zamboni\n");
+		setSwitch('7','R');
+		setSwitch('2','R');
+		while(!get_switch_status("10"));
+		setSwitch('1','R');
+		config1();
+	}else if(zam==13&&config==1){
+		wprintf(&train_window,"Config 2 With Zamboni\n");
+		//config2 with zamboni
+		setSwitch('7','R');
+		setSwitch('2','R');
+		while(!get_switch_status("3"));
+		setSwitch('8','R');
+		setSwitch('1','R');
+		config1();
 	}
-*/
+
 
 
 
