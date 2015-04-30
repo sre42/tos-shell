@@ -4,7 +4,7 @@
 #define TRAIN_NUMBER "20\0"
 
 static WINDOW train_window=  {0, 0, 80, 10, 0, 0, ' '};
-int sleep_ticks = 100;
+int sleep_ticks = 10;
 int config =0;
 void clear_train_buffer(void);
 void init_switches(void);
@@ -45,19 +45,6 @@ void send_ToCom(char* string){
 	command[0] = '\0';
 	char temp[10];
 	COM_Message msg;
-	/*char* temp;
-	//clear_train_buffer();
-	command[0]= '\0';
-
-	clrbuff[0] = 'R';
-	clrbuff[1] = '\0';
-	str_concat(clrbuff,"\015");
-	msg.output_buffer =clrbuff;
-   	msg.len_input_buffer = 0;
-   	msg.input_buffer = temp;
-   		sleep(sleep_ticks);
-   	send(com_port,&msg);
-*/
 	str_concat(command,string);
 	str_concat(command,"\015");
 	
@@ -146,12 +133,14 @@ void clear_train_buffer(){
 	cmd[1] = '\0';
 	send_ToCom(cmd);
 }
-/*
-Get the status of a contact.
-“*1\015” is returned if there
-is a vehicle on the contact.
-Otherwise, “*0\015” is
-returned. 
+/**
+ * Get the status of a contact.
+	“*1\015” is returned if there
+	is a vehicle on the contact.
+	Otherwise, “*0\015” is
+	returned.
+ * @param  c [switch number passed as a string]
+ * @return   [1 or 0 based on switch status]
  */
 int get_switch_status(char* c){
 	char cmd[10];
@@ -232,7 +221,7 @@ void config4(){
 	change_speed('0');
 	change_speed('4');
 	while(!get_switch_status("16"));
-	sleep(1000);
+	sleep(500);
 	change_speed('0');
 
 	change_direction();
@@ -245,18 +234,18 @@ void config4(){
 }
 /**
  * Checks for Zamboni
- * @return [description]
+ * @return [returns the switch at which zamboni was found]
  */
 int check_zamboni(){
 	int i;
 	for(i=0;i<20;i++){
-		sleep(30);
-		if(get_switch_status("6")){
-			return 10;
+		sleep(10);
+		if(get_switch_status("7")){
+			return 7;
 		}
-		sleep(30);
-		if(get_switch_status("14")){
-			return 14;
+		sleep(10);
+		if(get_switch_status("13")){
+			return 13;
 		}
 	}
 	return 0;
@@ -294,12 +283,17 @@ void train_process(PROCESS self, PARAM param)
 	clear_train_buffer();
 	//config4();
 	int zam=0;
-	/*zam = check_zamboni();
+	zam = check_zamboni();
 	if(zam){
 		wprintf(&train_window,"Zamboni Found\n");
+		if(zam==7){
+			wprintf(&train_window,"Zamboni Is rotating Clock-Wise\n");	
+		}else if(zam==13){
+			wprintf(&train_window,"Zamboni Is rotating Anti Clock-Wise\n");	
+		}
 
 	}else wprintf(&train_window,"Zamboni not found\n");
-	*/
+	
 	switch(check_config()){
 		case 1:
 			wprintf(&train_window,"Config is 1 or 2\n");
@@ -318,7 +312,7 @@ void train_process(PROCESS self, PARAM param)
 
 	//config1 with zamboni - working
 /*
-	if(zam){
+	if(zam==){
 	setSwitch('7','R');
 	setSwitch('2','R');
 	while(!get_switch_status("10"));
