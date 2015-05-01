@@ -443,7 +443,10 @@ void train_process(PROCESS self, PARAM param)
 
 		change_speed('4');
 		while(!get_switch_status("16"));
-		sleep(500);
+		//sleep(500);
+		change_speed('3');
+		change_speed('2');
+		change_speed('1');
 		change_speed('0');
 		setSwitch('3','R');
 		while(!get_switch_status("13"));

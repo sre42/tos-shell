@@ -193,13 +193,13 @@ donemovingdata:
 	;set zamboni speed to 5
 	mov al, 'L'
 	call send_char_com1
-	mov al, '2'
+	mov al, '7'
 	call send_char_com1
-	mov al, '4'
+	mov al, '8'
 	call send_char_com1
 	mov al, 'S'
 	call send_char_com1
-	mov al, '6'
+	mov al, '8'
 	call send_char_com1
 	mov al, 015q
 	call send_char_com1
