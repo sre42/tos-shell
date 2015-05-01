@@ -257,15 +257,26 @@ void config4(){
  */
 int check_zamboni(){
 	int i;
-	for(i=0;i<20;i++){
+	int found=0;
+	for(i=0;i<40;i++){
 		sleep(10);
-		if(get_switch_status("7")){
-			return 7;
+			if(get_switch_status("4")){
+				found =1;
+				break;
+			}
 		}
-		sleep(10);
-		if(get_switch_status("13")){
-			return 13;
-		}
+
+	for(i=0;i<30 && found;i++){
+		
+			sleep(10);
+			if(get_switch_status("7")){
+				return 7;
+			}
+			sleep(10);
+			if(get_switch_status("13")){
+				return 13;
+			}
+		
 	}
 	return 0;
 }
@@ -348,6 +359,136 @@ void train_process(PROCESS self, PARAM param)
 		setSwitch('8','R');
 		setSwitch('1','R');
 		config1();
+	}else if(zam&&config==3){
+		wprintf(&train_window,"Config 3 With Zamboni\n");
+		//config2 with zamboni
+		setSwitch('4','R');
+		setSwitch('3','R');
+		while(!get_switch_status("10"));
+		change_speed('4');
+		setSwitch('5','R');
+		setSwitch('6','G');
+		while(!get_switch_status("9"));
+		setSwitch('5','G');
+		while(!get_switch_status("12"));
+		change_speed('0');
+		change_direction();
+		setSwitch('7','R');
+		
+		//error
+		//
+		//
+		while(!get_switch_status("13"));
+		
+		setSwitch('2','R');
+		change_speed('4');
+
+		while(!get_switch_status("3"));
+		setSwitch('1','R');
+		
+		while(!get_switch_status("12"));
+		change_speed('0');
+		setSwitch('1','G');
+		setSwitch('7','G');
+		change_speed('4');
+		while(!get_switch_status("9"));
+		change_speed('0');
+
+		//trapping zamboni
+		setSwitch('7','R');
+		setSwitch('2','R');
+		while(!get_switch_status("10"));
+		setSwitch('1','R');
+
+		//moving to home
+		
+		change_speed('4');
+		setSwitch('4','R');
+		setSwitch('3','R');
+		while(!get_switch_status("5"));
+		change_speed('0');
+		wprintf(&train_window,"At home base!!!\n");
+
+
+		
+	}
+	else if(zam&&config==4){
+		wprintf(&train_window,"Config 4 With Zamboni\n");
+		//config2 with zamboni
+		
+
+
+		while(!get_switch_status("15"));
+		setSwitch('8','R');
+		change_speed('4');
+		while(!get_switch_status("6"));
+		change_speed('0');
+		change_direction();
+		setSwitch('4','R');
+		setSwitch('3','G');
+		change_speed('4');
+
+		while(!get_switch_status("1"));
+		change_speed('0');
+
+		while(!get_switch_status("12"));
+		setSwitch('8','G');
+		while(!get_switch_status("13"));
+		change_speed('4');
+		setSwitch('4','G');
+		setSwitch('9','G');
+		while(!get_switch_status("14"));
+		change_speed('0');
+		change_direction();
+
+		change_speed('4');
+		while(!get_switch_status("16"));
+		sleep(500);
+		change_speed('0');
+		setSwitch('3','R');
+		while(!get_switch_status("13"));
+		change_direction();
+
+
+		change_speed('4');
+		while(!get_switch_status("14"));
+
+		change_speed('0');
+		change_direction();
+
+		setSwitch('9','R');
+		change_speed('4');
+		setSwitch('2','G');
+		setSwitch('1','R');
+		while(!get_switch_status("1"));
+		change_speed('0');
+		
+		while(!get_switch_status("14"));
+
+		setSwitch('8','R');
+
+
+		change_speed('4');
+		while(!get_switch_status("6"));
+
+		change_speed('0');
+
+		setSwitch('4','R');
+		setSwitch('3','R');
+
+		change_direction();
+		change_speed('4');
+		while(!get_switch_status("5"));
+
+		change_speed('0');
+
+
+		wprintf(&train_window,"At home base!!!\n");
+
+
+
+		
+		
 	}
 
 
@@ -365,5 +506,5 @@ void train_process(PROCESS self, PARAM param)
  */
 void init_train(WINDOW* wnd)
 {
-	create_process(train_process, 5, 0, "Train Process");
+	create_process(train_process, 4, 0, "Train Process");
 }

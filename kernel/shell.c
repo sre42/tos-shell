@@ -21,9 +21,9 @@ int i=0;
  	wprintf(&shell_window,"help                  - for displaying help information\n");
  	wprintf(&shell_window,"ps                    - list all processes\n");
  	wprintf(&shell_window,"cls                   - clear window\n");
- 	wprintf(&shell_window,"echo {string}       - Echo the string passed\n");
+ 	wprintf(&shell_window,"echo {string}         - Echo the string passed\n");
  	wprintf(&shell_window,"wait {duration}       - Sleep for duration passed\n");
- 	wprintf(&shell_window,"train 					-Start the train App\n");
+ 	wprintf(&shell_window,"train                 -Start the train App\n");
  }
 /**
  * Function that prints the processes information
@@ -233,7 +233,7 @@ void executeCmd(){
  	char ch;
  	Keyb_Message msg;
 
-
+ 	init_switches();
 
  	clear_window(kernel_window);
  	wprintf(&shell_window,"WELCOME TO THE TOS SHELL\n");
@@ -309,7 +309,7 @@ void executeCmd(){
  void init_shell()
  {
 
- 	create_process(tosShellProcess,5,0,"Shell");
+ 	create_process(tosShellProcess,3,0,"Shell");
  	//init_train(&train_window);
  	resign();
  }
