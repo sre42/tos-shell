@@ -1,7 +1,7 @@
 #include <kernel.h>
 static WINDOW shell_window = {0, 10,  80, 15, 0, 0, ' '};
 static WINDOW train_window=  {0, 0, 80, 10, 0, 0, ' '};
-char cmdBuffer[80];//currentCommandBuffer[max line length]
+char cmdBuffer[80];
 int i=0;
 
 
@@ -23,7 +23,7 @@ int i=0;
  	wprintf(&shell_window,"cls                   - clear window\n");
  	wprintf(&shell_window,"echo {string}         - Echo the string passed\n");
  	wprintf(&shell_window,"wait {duration}       - Sleep for duration passed\n");
- 	wprintf(&shell_window,"train                 -Start the train App\n");
+ 	wprintf(&shell_window,"train help            -View the train commands\n");
  }
 /**
  * Function that prints the processes information
@@ -49,7 +49,7 @@ void echoShell(){
 }
 
 /**
- * Function that slseeps for the duration passed as an argument
+ * Function that sleeps for the duration passed as an argument
  */
 void sleepShell(){
 	char timePtr[10];
@@ -72,8 +72,8 @@ void sleepShell(){
 }
 /**
  * This function stores the whitespaced removed argument from the command buffer starting at index passed
- * @param s   pointer to the array inwhich the argument has to be stored
- * @param num Index of the argument inside the command buffer
+ * @param s   [pointer to the array inwhich the argument has to be stored]
+ * @param num [Index of the argument inside the command buffer]
  */
 void ignoreWhiteSpaces(char* s,int num){
 	int i=0;
@@ -89,9 +89,9 @@ void ignoreWhiteSpaces(char* s,int num){
 }
 /**
  * This function stores the whitespaced removed argument from the command buffer starting at index passed
- * @param s   pointer to the array inwhich the argument has to be stored
- * @param num Index of the argument inside the command buffer
- * @return Returns the current counter in the command array
+ * @param s   [pointer to the array inwhich the argument has to be stored]
+ * @param num [Index of the argument inside the command buffer]
+ * @return [Returns the current counter in the command array]
  */
 int ignoreWhiteSpacesReturn(char* s,int num){
 	int i=0;
@@ -130,7 +130,7 @@ void start_train(){
 }
 
 /**
- * FUnction to clear the buffer contents
+ * Function to clear the buffer contents
  */
 void clrBuffer(){
 	int i;
@@ -142,9 +142,9 @@ void clrBuffer(){
 }
 /**
  * Basic String compare Function
- * @param1	User command 
- * @param2	Predefined TOS command
- * @return	Boolean
+ * @param1	[User command]
+ * @param2	[Predefined TOS command]
+ * @return	[Boolean]
  */
 BOOL mystrcmp(char* cmd1, char* cmd2){
 	while (*cmd1 == *cmd2 && *cmd2 != '\0') {
@@ -153,6 +153,7 @@ BOOL mystrcmp(char* cmd1, char* cmd2){
     }
     return *cmd2 == '\0';
     /*
+    //refactoring code...
     if (*cmd2 == '\0')
     	return 1;
     else
@@ -189,20 +190,28 @@ void executeCmd(){
 		if(mystrcmp(arg,"auto")){
 		start_train();
 		}else if(mystrcmp(arg,"stop")){
-			wprintf(&shell_window,"Train Stopping!\n");
-			train_stop();
+			if(!isRunning()){
+				wprintf(&shell_window,"Train Stopping!\n");
+				train_stop();
+			}else{
+				wprintf(&shell_window,"Oops, Train app is running, try again later!\n");
+			}
 		}else if(mystrcmp(arg,"go")){
-			wprintf(&shell_window,"Train is on the GO!\n");
-			train_go();
+			if(!isRunning()){
+				wprintf(&shell_window,"Train is on the GO!\n");
+				train_go();
+			}else{
+				wprintf(&shell_window,"Oops, Train app is running, try again later!\n");
+			}
 		} else if(mystrcmp(arg,"help")){
 			wprintf(&shell_window,"Train HELP:::\n");
-			wprintf(&shell_window,"train auto 				-Starts automatic train algorithm(requires immediate startup to wok properly)\n");
-			wprintf(&shell_window,"train stop 				-Stops the train\n");
-			wprintf(&shell_window,"train go 				-Makes the train go\n");
-			wprintf(&shell_window,"***BUGGY**train raw command-Executes the raw command passed as argument\n");
-			wprintf(&shell_window,"train help 				-displays train help\n");
-			wprintf(&shell_window,"help 				-displays Shell help\n");
-		}else if(mystrcmp(arg,"raw")){
+			wprintf(&shell_window,"train auto               -Starts automatic train Application\n");
+			wprintf(&shell_window,"train stop               -Stops the train\n");
+			wprintf(&shell_window,"train go                 -Makes the train go\n");
+			//wprintf(&shell_window,"***BUGGY**train rraw command-Executes the raw command passed as argument\n");
+			wprintf(&shell_window,"train help               -displays train help\n");
+			wprintf(&shell_window,"help                     -displays Shell help\n");
+		}else if(mystrcmp(arg,"rraw")){
 			/*
 				//RAW COMMAND
 				ignoreWhiteSpaces(raw,count);
@@ -238,15 +247,15 @@ void executeCmd(){
  	clear_window(kernel_window);
  	wprintf(&shell_window,"WELCOME TO THE TOS SHELL\n");
  	//init_train(&train_window);// For automatic startup of Train App
+ 	
+
+
 	/**
 	*Start of main loop
 	**/
 	while(1){
 		
 		output_char(&shell_window,'#');
-		
-
-		//shell_window_height++;
 		while(1){
 
 			msg.key_buffer = &ch;
@@ -262,6 +271,9 @@ void executeCmd(){
                     i--;
                     wprintf(&shell_window, "%c", ch);
                     break;
+                /*
+				checking for return
+				 */
 				case 13:
 					cmdBuffer[i]='\0';
 					wprintf(&shell_window, "\n");
@@ -272,6 +284,9 @@ void executeCmd(){
 					//wprintf(&shell_window, "\n");
 					output_char(&shell_window,'#');
 					break;
+				/*
+				Any other key
+				 */
 				default:
 					cmdBuffer[i] = ch;
 					/*
@@ -287,20 +302,6 @@ void executeCmd(){
 					
 
 			}
-			//executeCmd();
-			/*if(ch == '\r'){
-				shell_window.cursor_x = 0;
-				shell_window.cursor_y++;
-				if(shell_window_height==19){
-					scroll_window(&shell_window);
-					shell_window_height--;
-				}
-				break;
-				
-			}else {
-
-				output_char(&shell_window,ch);
-			}*/
 		}
 	}
 }

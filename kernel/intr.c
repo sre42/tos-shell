@@ -23,7 +23,10 @@ void load_idt (IDT* base)
     asm ("lidt %0" : "=m" (mem48));
 }
 
-
+void add_ready_queue_p()
+{
+    add_ready_queue(p);
+}
 void init_idt_entry (int intr_no, void (*isr) (void))
 {
     idt[intr_no].offset_0_15  = (unsigned) isr & 0xffff;
@@ -192,7 +195,7 @@ void dummy_isr_timer ()
     p = interrupt_table[TIMER_IRQ];
     if (p && p->state == STATE_INTR_BLOCKED) {
 	/* Add event handler to ready queue */
-	add_ready_queue (p);
+	add_ready_queue_p();
     }
     
     /* Dispatch new process */
@@ -250,7 +253,7 @@ void dummy_isr_com1 ()
     asm ("movl %%esp,%0" : "=m" (active_proc->esp) : );
 
     /* Add event handler to ready queue */
-    add_ready_queue (p);
+    add_ready_queue_p();
 
     /* Dispatch new process */
     active_proc = dispatcher();
@@ -310,7 +313,7 @@ void dummy_isr_keyb()
     }
 
     /* Add event handler to ready queue */
-    add_ready_queue (p);
+    add_ready_queue_p();
 
     active_proc = dispatcher();
 

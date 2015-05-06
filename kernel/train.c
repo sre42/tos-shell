@@ -4,8 +4,11 @@
 #define TRAIN_NUMBER "20\0"
 
 static WINDOW train_window=  {0, 0, 80, 10, 0, 0, ' '};
-int sleep_ticks = 10;
+int sleep_ticks = 10;//These ticks are used between consecutive commands only. Not used inside the fourth config's Dead end track.
 int config =0;
+int running =0;
+
+
 void clear_train_buffer(void);
 void init_switches(void);
 void str_concat(char*,char*);
@@ -16,6 +19,7 @@ void change_speed(char*);
 int get_switch_status(char*);
 void debug_command(void);
 void config1(void);
+int isRunning(void);
 
 
 //************************
@@ -23,6 +27,7 @@ void config1(void);
 
 /**
  * String Concatenation Function
+ * warning: only takes EOL into account
  * @param s1 [Base String 1]
  * @param s2 [String to be added at end]
  */
@@ -36,7 +41,17 @@ void str_concat(char* s1, char* s2){
 	*s1='\0';
 
 }
-
+/**
+ * [function that checks if the Train Application is running]
+ * @return  [0 or 1]
+ */
+int isRunning(){
+	return running;
+}
+/**
+ * Sends the Command to the Train
+ * @param string [command passed as argument]
+ */
 void send_ToCom(char* string){
 
 
@@ -251,6 +266,163 @@ void config4(){
 	change_speed('0');
 	wprintf(&train_window,"At home base!!!\n");
 }
+
+/**
+ * configuration 1 with Zamboni
+ */
+void config1Zamboni(){
+	wprintf(&train_window,"Config 1 With Zamboni\n");
+	setSwitch('7','R');
+	setSwitch('2','R');
+	while(!get_switch_status("10"));
+	setSwitch('1','R');
+	config1();
+}
+
+/**
+ * configuration 2 with Zamboni
+ */
+void config2Zamboni(){
+	wprintf(&train_window,"Config 2 With Zamboni\n");
+	setSwitch('7','R');
+	setSwitch('2','R');
+	while(!get_switch_status("3"));
+	setSwitch('8','R');
+	setSwitch('1','R');
+	config1();
+}
+
+
+/**
+ * configuration 3 with Zamboni
+ */
+void config3Zamboni(){
+	wprintf(&train_window,"Config 3 With Zamboni\n");
+	setSwitch('4','R');
+	setSwitch('3','R');
+	while(!get_switch_status("10"));
+	change_speed('4');
+	setSwitch('5','R');
+	setSwitch('6','G');
+	while(!get_switch_status("9"));
+	setSwitch('5','G');
+	while(!get_switch_status("12"));
+	change_speed('0');
+	change_direction();
+	setSwitch('7','R');
+	
+	while(!get_switch_status("13"));
+	
+	setSwitch('2','R');
+	change_speed('4');
+
+	while(!get_switch_status("3"));
+	setSwitch('1','R');
+	
+	while(!get_switch_status("12"));
+	change_speed('0');
+	setSwitch('1','G');
+	setSwitch('7','G');
+	change_speed('4');
+	while(!get_switch_status("9"));
+	change_speed('0');
+
+	//trapping zamboni
+	setSwitch('7','R');
+	setSwitch('2','R');
+	while(!get_switch_status("10"));
+	setSwitch('1','R');
+
+	//moving to home
+	
+	change_speed('4');
+	setSwitch('4','R');
+	setSwitch('3','R');
+	while(!get_switch_status("5"));
+	change_speed('0');
+	wprintf(&train_window,"At home base!!!\n");
+}
+
+
+/**
+ * configuration 4 with Zamboni
+ */
+void config4Zamboni(){
+	wprintf(&train_window,"Config 4 With Zamboni\n");
+
+	while(!get_switch_status("15"));
+	setSwitch('8','R');
+	change_speed('4');
+	while(!get_switch_status("6"));
+	change_speed('0');
+	change_direction();
+	setSwitch('4','R');
+	setSwitch('3','G');
+	change_speed('4');
+
+	while(!get_switch_status("1"));
+	change_speed('0');
+
+	while(!get_switch_status("12"));
+	setSwitch('8','G');
+	while(!get_switch_status("13"));
+	change_speed('4');
+	setSwitch('4','G');
+	setSwitch('9','G');
+	while(!get_switch_status("14"));
+	change_speed('0');
+	change_direction();
+	
+	change_speed('4');
+	while(!get_switch_status("16"));
+	//Dead-end track
+	//sleep(500);
+	change_speed('3');
+	change_speed('2');
+	change_speed('1');
+	change_speed('0');
+	setSwitch('3','R');
+	while(!get_switch_status("13"));
+	change_direction();
+
+
+	change_speed('4');
+	while(!get_switch_status("14"));
+
+	change_speed('0');
+	change_direction();
+
+	setSwitch('9','R');
+	change_speed('4');
+	setSwitch('2','G');
+	setSwitch('1','R');
+	while(!get_switch_status("1"));
+	change_speed('0');
+	
+	while(!get_switch_status("14"));
+
+	setSwitch('8','R');
+
+
+	change_speed('4');
+	while(!get_switch_status("6"));
+
+	change_speed('0');
+
+	setSwitch('4','R');
+	setSwitch('3','R');
+
+	change_direction();
+	change_speed('4');
+	while(!get_switch_status("5"));
+
+	change_speed('0');
+
+
+	wprintf(&train_window,"At home base!!!\n");
+}
+
+
 /**
  * Checks for Zamboni
  * @return [returns the switch at which zamboni was found]
@@ -295,6 +467,9 @@ int check_config(){
 		//config4
 		config= 4;
 	}
+	else {
+		config=0;
+	}
 
 	return config;
 }
@@ -304,12 +479,13 @@ int check_config(){
  */
 void train_process(PROCESS self, PARAM param)
 {
+	clear_window(&train_window);
 	wprintf(&train_window,"Starting Train Application\n");
 	
 	wprintf(&train_window,"Initializing Switches\n");
 
 	init_switches();
-
+	running =1;
 	clear_train_buffer();
 	//config4();
 	int zam=0;
@@ -325,7 +501,11 @@ void train_process(PROCESS self, PARAM param)
 
 	}else wprintf(&train_window,"Zamboni not found\n");
 	config=check_config();
+	//WITHOUT ZAMBONI
 	switch(config){
+		case 0:
+			wprintf(&train_window,"Config not found\n");
+			break;
 		case 1:
 			wprintf(&train_window,"Config is 1 or 2\n");
 			if(!zam) config1();
@@ -339,173 +519,29 @@ void train_process(PROCESS self, PARAM param)
 			if(!zam) config4();
 			break;
 	}
-	
-
-	//config1 with zamboni - working
-
+	//WITH ZAMBONI
 	if(zam==7&&config==1){
-		wprintf(&train_window,"Config 1 With Zamboni\n");
-		setSwitch('7','R');
-		setSwitch('2','R');
-		while(!get_switch_status("10"));
-		setSwitch('1','R');
-		config1();
+		config1Zamboni();
 	}else if(zam==13&&config==1){
-		wprintf(&train_window,"Config 2 With Zamboni\n");
-		//config2 with zamboni
-		setSwitch('7','R');
-		setSwitch('2','R');
-		while(!get_switch_status("3"));
-		setSwitch('8','R');
-		setSwitch('1','R');
-		config1();
+		config2Zamboni();
 	}else if(zam&&config==3){
-		wprintf(&train_window,"Config 3 With Zamboni\n");
-		//config2 with zamboni
-		setSwitch('4','R');
-		setSwitch('3','R');
-		while(!get_switch_status("10"));
-		change_speed('4');
-		setSwitch('5','R');
-		setSwitch('6','G');
-		while(!get_switch_status("9"));
-		setSwitch('5','G');
-		while(!get_switch_status("12"));
-		change_speed('0');
-		change_direction();
-		setSwitch('7','R');
-		
-		//error
-		//
-		//
-		while(!get_switch_status("13"));
-		
-		setSwitch('2','R');
-		change_speed('4');
-
-		while(!get_switch_status("3"));
-		setSwitch('1','R');
-		
-		while(!get_switch_status("12"));
-		change_speed('0');
-		setSwitch('1','G');
-		setSwitch('7','G');
-		change_speed('4');
-		while(!get_switch_status("9"));
-		change_speed('0');
-
-		//trapping zamboni
-		setSwitch('7','R');
-		setSwitch('2','R');
-		while(!get_switch_status("10"));
-		setSwitch('1','R');
-
-		//moving to home
-		
-		change_speed('4');
-		setSwitch('4','R');
-		setSwitch('3','R');
-		while(!get_switch_status("5"));
-		change_speed('0');
-		wprintf(&train_window,"At home base!!!\n");
-
-
-		
+		config3Zamboni();
 	}
 	else if(zam&&config==4){
-		wprintf(&train_window,"Config 4 With Zamboni\n");
-		//config2 with zamboni
-		
-
-
-		while(!get_switch_status("15"));
-		setSwitch('8','R');
-		change_speed('4');
-		while(!get_switch_status("6"));
-		change_speed('0');
-		change_direction();
-		setSwitch('4','R');
-		setSwitch('3','G');
-		change_speed('4');
-
-		while(!get_switch_status("1"));
-		change_speed('0');
-
-		while(!get_switch_status("12"));
-		setSwitch('8','G');
-		while(!get_switch_status("13"));
-		change_speed('4');
-		setSwitch('4','G');
-		setSwitch('9','G');
-		while(!get_switch_status("14"));
-		change_speed('0');
-		change_direction();
-
-		change_speed('4');
-		while(!get_switch_status("16"));
-		//sleep(500);
-		change_speed('3');
-		change_speed('2');
-		change_speed('1');
-		change_speed('0');
-		setSwitch('3','R');
-		while(!get_switch_status("13"));
-		change_direction();
-
-
-		change_speed('4');
-		while(!get_switch_status("14"));
-
-		change_speed('0');
-		change_direction();
-
-		setSwitch('9','R');
-		change_speed('4');
-		setSwitch('2','G');
-		setSwitch('1','R');
-		while(!get_switch_status("1"));
-		change_speed('0');
-		
-		while(!get_switch_status("14"));
-
-		setSwitch('8','R');
-
-
-		change_speed('4');
-		while(!get_switch_status("6"));
-
-		change_speed('0');
-
-		setSwitch('4','R');
-		setSwitch('3','R');
-
-		change_direction();
-		change_speed('4');
-		while(!get_switch_status("5"));
-
-		change_speed('0');
-
-
-		wprintf(&train_window,"At home base!!!\n");
-
-
-
-		
-		
+		config4Zamboni();
 	}
 
-
-
-
-
-
 	wprintf(&train_window,"Shutting down Train App\n");
+	running=0;
+	remove_ready_queue(active_proc);
+	resign();
 	while(1);
+	
 }
 
 /**
  * Initializing train functions
- * @param wnd [description]
+ * @param wnd [train window]
  */
 void init_train(WINDOW* wnd)
 {
