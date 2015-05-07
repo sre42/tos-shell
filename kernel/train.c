@@ -386,6 +386,7 @@ void config4Zamboni(){
 	*/
 	change_speed('0');
 	setSwitch('3','R');
+	setSwitch('9','R');
 	while(!get_switch_status("13"));
 	change_direction();
 
@@ -396,8 +397,8 @@ void config4Zamboni(){
 	change_speed('0');
 	change_direction();
 
-	setSwitch('9','R');
-	change_speed('4');
+	
+	change_speed('5');
 	setSwitch('2','G');
 	setSwitch('1','R');
 	while(!get_switch_status("1"));

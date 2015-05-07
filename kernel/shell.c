@@ -200,8 +200,15 @@ void executeCmd(){
 		start_train();
 		}else if(mystrcmp(arg,"stop")){
 			if(!isRunning()){
-				wprintf(&shell_window,"Train Stopping!\n");
+				wprintf(&shell_window,"Train stopping!\n");
 				train_stop();
+			}else{
+				wprintf(&shell_window,"Oops, Train app is running, try again later!\n");
+			}
+		}else if(mystrcmp(arg,"d")){
+			if(!isRunning()){
+				wprintf(&shell_window,"Changing Train direction!\n");
+				change_direction();
 			}else{
 				wprintf(&shell_window,"Oops, Train app is running, try again later!\n");
 			}
@@ -217,6 +224,7 @@ void executeCmd(){
 			wprintf(&shell_window,"train auto               -Starts automatic train Application\n");
 			wprintf(&shell_window,"train stop               -Stops the train\n");
 			wprintf(&shell_window,"train go                 -Makes the train go\n");
+			wprintf(&shell_window,"train d                  -Changes the train direction\n");
 			//wprintf(&shell_window,"***BUGGY**train rraw command-Executes the raw command passed as argument\n");
 			wprintf(&shell_window,"train help               -displays train help\n");
 			wprintf(&shell_window,"help                     -displays Shell help\n");
