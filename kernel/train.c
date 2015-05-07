@@ -255,7 +255,7 @@ void config4(){
 	change_speed('0');
 	change_speed('4');
 	while(!get_switch_status("16"));
-	sleep(500);
+	sleep(600);
 	change_speed('0');
 
 	change_direction();
@@ -301,7 +301,7 @@ void config3Zamboni(){
 	setSwitch('4','R');
 	setSwitch('3','R');
 	while(!get_switch_status("10"));
-	change_speed('4');
+	change_speed('5');
 	setSwitch('5','R');
 	setSwitch('6','G');
 	while(!get_switch_status("9"));
@@ -314,7 +314,7 @@ void config3Zamboni(){
 	while(!get_switch_status("13"));
 	
 	setSwitch('2','R');
-	change_speed('4');
+	change_speed('5');
 
 	while(!get_switch_status("3"));
 	setSwitch('1','R');
@@ -350,7 +350,7 @@ void config3Zamboni(){
 void config4Zamboni(){
 	wprintf(&train_window,"Config 4 With Zamboni\n");
 
-	while(!get_switch_status("15"));
+	while(!get_switch_status("14"));
 	setSwitch('8','R');
 	change_speed('4');
 	while(!get_switch_status("6"));
@@ -366,7 +366,7 @@ void config4Zamboni(){
 	while(!get_switch_status("12"));
 	setSwitch('8','G');
 	while(!get_switch_status("13"));
-	change_speed('4');
+	change_speed('5');
 	setSwitch('4','G');
 	setSwitch('9','G');
 	while(!get_switch_status("14"));
@@ -376,10 +376,14 @@ void config4Zamboni(){
 	change_speed('4');
 	while(!get_switch_status("16"));
 	//Dead-end track
-	//sleep(500);
+	sleep(600);
+	/*
+	For real hardware: use slow down mechanism instead of sleep
+	
 	change_speed('3');
 	change_speed('2');
 	change_speed('1');
+	*/
 	change_speed('0');
 	setSwitch('3','R');
 	while(!get_switch_status("13"));
@@ -430,7 +434,7 @@ void config4Zamboni(){
 int check_zamboni(){
 	int i;
 	int found=0;
-	for(i=0;i<40;i++){
+	for(i=0;i<60;i++){
 		sleep(10);
 			if(get_switch_status("4")){
 				found =1;
@@ -438,7 +442,7 @@ int check_zamboni(){
 			}
 		}
 
-	for(i=0;i<30 && found;i++){
+	for(i=0;i<60 && found;i++){
 		
 			sleep(10);
 			if(get_switch_status("7")){
@@ -483,6 +487,7 @@ void train_process(PROCESS self, PARAM param)
 	wprintf(&train_window,"Starting Train Application\n");
 	
 	wprintf(&train_window,"Initializing Switches\n");
+	wprintf(&train_window,"Looking for Zamboni\n");
 
 	init_switches();
 	running =1;

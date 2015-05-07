@@ -1,6 +1,7 @@
 #include <kernel.h>
-static WINDOW shell_window = {0, 10,  80, 15, 0, 0, ' '};
-static WINDOW train_window=  {0, 0, 80, 10, 0, 0, ' '};
+static WINDOW shell_window = {0, 11,  80, 15, 0, 0, ' '};
+static WINDOW train_window=  {0, 0, 80, 9, 0, 0, ' '};
+static WINDOW divider_window=  {0, 10, 80, 11, 0, 0, ' '};
 char cmdBuffer[80];
 int i=0;
 
@@ -222,8 +223,10 @@ void executeCmd(){
 		}else {
 			wprintf(&shell_window,"Entered wrong command, enter \"train help\" for details\n");
 		}
+	}else if(mystrcmp(cmd,"train")){
+		wprintf(&shell_window,"Please enter \"train help\" for details\n");
 	}else{
-		wprintf(&shell_window,"Invalid command! enter help for information\n");
+		wprintf(&shell_window,"Invalid command! enter \"help\" or \"train help\" for information\n");
 	}
 
 }
@@ -237,7 +240,7 @@ void executeCmd(){
 
  	int shell_window_height=19;
 
-
+ 	
 
  	char ch;
  	Keyb_Message msg;
@@ -246,6 +249,7 @@ void executeCmd(){
 
  	clear_window(kernel_window);
  	wprintf(&shell_window,"WELCOME TO THE TOS SHELL\n");
+ 	wprintf(&divider_window,"-------------------------------------------------------");
  	//init_train(&train_window);// For automatic startup of Train App
  	
 
