@@ -6,7 +6,7 @@
 static WINDOW train_window=  {0, 0, 80, 10, 0, 0, ' '};
 int sleep_ticks = 10;//These ticks are used between consecutive commands only. Not used inside the fourth config's Dead end track.
 int config =0;
-int running =0;
+int running =0;//This is used to disable the use of Train go and Train Stop inside shell if the main App is running
 
 
 void clear_train_buffer(void);
