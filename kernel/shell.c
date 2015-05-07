@@ -1,6 +1,6 @@
 #include <kernel.h>
-static WINDOW shell_window = {0, 11,  80, 15, 0, 0, ' '};
-static WINDOW train_window=  {0, 0, 80, 9, 0, 0, ' '};
+static WINDOW shell_window = {0, 11,  80, 14, 0, 0, ' '};
+static WINDOW train_window=  {0, 0, 80, 10, 0, 0, ' '};
 static WINDOW divider_window=  {0, 10, 80, 11, 0, 0, ' '};
 char cmdBuffer[80];
 int i=0;
@@ -57,16 +57,24 @@ void sleepShell(){
 	ignoreWhiteSpaces(timePtr,5);
 	//char* duration = cmdBuffer+5;
 	char* duration = timePtr;
+	int error=0;
 	//To convert it into int.
 	int num=0;
 	while(*duration != '\0'){
 		if (*duration >= '0' && *duration <= '9'){
 			num = num * 10 + *duration - '0';
-		}else break;
+		}else{
+			wprintf(&shell_window,"Oops, Not a valid Number! Sleeping for 1 Duration");
+			error=1;
+			num=1; 
+			break;
+		}
 		duration++;
 	}
-	wprintf(&shell_window,"Sleeping for Duration:");
-	wprintf(&shell_window,timePtr);
+	if(!error){
+		wprintf(&shell_window,"Sleeping for Duration:");
+		wprintf(&shell_window,timePtr);	
+	} 
 	sleep(num);
 	wprintf(&shell_window,"\n");
 	wprintf(&shell_window,"Just Woke up!\n");
@@ -248,8 +256,20 @@ void executeCmd(){
  	init_switches();
 
  	clear_window(kernel_window);
+
  	wprintf(&shell_window,"WELCOME TO THE TOS SHELL\n");
+ 	
  	wprintf(&divider_window,"-------------------------------------------------------");
+ 	
+ 	wprintf(&train_window,"\n"); 
+ 	wprintf(&train_window," /$$$$$$$$ /$$$$$$   /$$$$$$\n"); 
+	wprintf(&train_window,"|__  $$__//$$__  $$ /$$__  $$\n"); 
+	wprintf(&train_window,"   | $$  | $$  \\ $$| $$  \\__/\n"); 
+	wprintf(&train_window,"   | $$  | $$  | $$|  $$$$$$ \n"); 
+	wprintf(&train_window,"   | $$  | $$  | $$ \\____  $$\n"); 
+	wprintf(&train_window,"   | $$  | $$  | $$ /$$  \\ $$\n"); 
+	wprintf(&train_window,"   | $$  |  $$$$$$/|  $$$$$$/\n"); 
+	wprintf(&train_window,"   |__/   \\______/  \\______/ \n"); 
  	//init_train(&train_window);// For automatic startup of Train App
  	
 

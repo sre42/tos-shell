@@ -484,6 +484,7 @@ int check_config(){
 void train_process(PROCESS self, PARAM param)
 {
 	clear_window(&train_window);
+	clear_window(&train_window);
 	wprintf(&train_window,"Starting Train Application\n");
 	
 	wprintf(&train_window,"Initializing Switches\n");
