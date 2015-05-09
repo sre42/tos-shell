@@ -4,6 +4,7 @@ static WINDOW train_window=  {0, 0, 80, 10, 0, 0, ' '};
 static WINDOW divider_window=  {0, 10, 80, 11, 0, 0, ' '};
 char cmdBuffer[80];
 int i=0;
+char artType[5];
 
 
 /**
@@ -26,6 +27,18 @@ int i=0;
  	wprintf(&shell_window,"wait {duration}       - Sleep for duration passed\n");
  	wprintf(&shell_window,"train help            -View the train commands\n");
  }
+/**
+ * Prints Ascii art 
+ */
+printArt(char* artType){
+	if(mystrcmp(artType,"ne")){
+
+	}
+
+}
+
+
+
 /**
  * Function that prints the processes information
  */
