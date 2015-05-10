@@ -7,7 +7,7 @@ static WINDOW train_window=  {0, 0, 80, 10, 0, 0, ' '};
 int sleep_ticks = 10;//These ticks are used between consecutive commands only. Not used inside the fourth config's Dead end track.
 int config =0;
 int running =0;//This is used to disable the use of Train go and Train Stop inside shell if the main App is running
-
+int deadEndTicks = 600;//This is the amount of ticks to sleep for the Dead-End Track. - Varies on diffirent Machines
 
 void clear_train_buffer(void);
 void init_switches(void);
@@ -22,9 +22,12 @@ void config1(void);
 int isRunning(void);
 
 
-//************************
+//*************************//
 //Main train initialization functions are at the bottom of this file.
-
+//*************************//
+//
+//
+//
 /**
  * String Concatenation Function
  * warning: only takes EOL into account
@@ -193,7 +196,7 @@ int get_switch_status(char* c){
    	msg.len_input_buffer = len;
    	msg.input_buffer = input;
    	
-   	sleep(10);
+   	sleep(sleep_ticks);
    	send(com_port,&msg);
    	if(msg.input_buffer[1]=='1') return 1;
    		else return 0;
@@ -255,7 +258,7 @@ void config4(){
 	change_speed('0');
 	change_speed('4');
 	while(!get_switch_status("16"));
-	sleep(600);
+	sleep(deadEndTicks);
 	change_speed('0');
 
 	change_direction();
@@ -376,7 +379,7 @@ void config4Zamboni(){
 	change_speed('4');
 	while(!get_switch_status("16"));
 	//Dead-end track
-	sleep(600);
+	sleep(deadEndTicks);
 	/*
 	For real hardware: use slow down mechanism instead of sleep
 	
@@ -436,7 +439,7 @@ int check_zamboni(){
 	int i;
 	int found=0;
 	for(i=0;i<60;i++){
-		sleep(10);
+		sleep(sleep_ticks);
 			if(get_switch_status("4")){
 				found =1;
 				break;
@@ -445,11 +448,11 @@ int check_zamboni(){
 
 	for(i=0;i<60 && found;i++){
 		
-			sleep(10);
+			sleep(sleep_ticks);
 			if(get_switch_status("7")){
 				return 7;
 			}
-			sleep(10);
+			sleep(sleep_ticks);
 			if(get_switch_status("13")){
 				return 13;
 			}
@@ -485,19 +488,22 @@ int check_config(){
 void train_process(PROCESS self, PARAM param)
 {
 	clear_window(&train_window);
-	clear_window(&train_window);
 	wprintf(&train_window,"Starting Train Application\n");
 	
 	wprintf(&train_window,"Initializing Switches\n");
 	wprintf(&train_window,"Looking for Zamboni\n");
 
-	init_switches();
+	
 	running =1;
-	clear_train_buffer();
-	//config4();
 	int zam=0;
 	int config=0;
+
+	init_switches();
+	clear_train_buffer();
 	zam = check_zamboni();
+
+
+	
 	if(zam){
 		wprintf(&train_window,"Zamboni Found\n");
 		if(zam==7){

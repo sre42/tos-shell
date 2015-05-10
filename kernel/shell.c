@@ -2,9 +2,8 @@
 static WINDOW shell_window = {0, 11,  80, 14, 0, 0, ' '};
 static WINDOW train_window=  {0, 0, 80, 10, 0, 0, ' '};
 static WINDOW divider_window=  {0, 10, 80, 11, 0, 0, ' '};
-char cmdBuffer[80];
-int i=0;
-char artType[5];
+char cmdBuffer[80];//Stores the current command
+int i=0;//counter for the current command
 
 
 /**
@@ -21,21 +20,29 @@ char artType[5];
  	wprintf(&shell_window,"Welcome to HELP\n");
  	wprintf(&shell_window,"Following are the list of commands that you may use:\n");
  	wprintf(&shell_window,"help                  - for displaying help information\n");
+ 	wprintf(&shell_window,"about                 - Author information\n");
  	wprintf(&shell_window,"ps                    - list all processes\n");
  	wprintf(&shell_window,"cls                   - clear window\n");
  	wprintf(&shell_window,"echo {string}         - Echo the string passed\n");
  	wprintf(&shell_window,"wait {duration}       - Sleep for duration passed\n");
- 	wprintf(&shell_window,"train help            -View the train commands\n");
+ 	wprintf(&shell_window,"train help            - View the train commands\n");
  }
 /**
  * Prints Ascii art 
  */
-printArt(char* artType){
-	if(mystrcmp(artType,"ne")){
+printArt(){
 
-	}
-
+ 	wprintf(&train_window,"\n"); 
+ 	wprintf(&train_window," /$$$$$$$$ /$$$$$$   /$$$$$$\n"); 
+	wprintf(&train_window,"|__  $$__//$$__  $$ /$$__  $$\n"); 
+	wprintf(&train_window,"   | $$  | $$  \\ $$| $$  \\__/\n"); 
+	wprintf(&train_window,"   | $$  | $$  | $$|  $$$$$$ \n"); 
+	wprintf(&train_window,"   | $$  | $$  | $$ \\____  $$\n"); 
+	wprintf(&train_window,"   | $$  | $$  | $$ /$$  \\ $$\n"); 
+	wprintf(&train_window,"   | $$  |  $$$$$$/|  $$$$$$/\n"); 
+	wprintf(&train_window,"   |__/   \\______/  \\______/ \n");
 }
+
 
 
 
@@ -164,7 +171,7 @@ void clrBuffer(){
 }
 /**
  * Basic String compare Function
- * @param1	[User command]
+ * @param1	[User entered command]
  * @param2	[Predefined TOS command]
  * @return	[Boolean]
  */
@@ -239,6 +246,7 @@ void executeCmd(){
 			wprintf(&shell_window,"train go                 -Makes the train go\n");
 			wprintf(&shell_window,"train d                  -Changes the train direction\n");
 			//wprintf(&shell_window,"***BUGGY**train rraw command-Executes the raw command passed as argument\n");
+			//warning: raw commands can break the python simulator and TOS.
 			wprintf(&shell_window,"train help               -displays train help\n");
 			wprintf(&shell_window,"help                     -displays Shell help\n");
 		}else if(mystrcmp(arg,"rraw")){
@@ -267,30 +275,23 @@ void executeCmd(){
  */
  void tosShellProcess(PROCESS self, PARAM param){
 
- 	int shell_window_height=19;
-
- 	
 
  	char ch;
  	Keyb_Message msg;
 
+ 	//Initialize all train switches Upon startup
  	init_switches();
 
  	clear_window(kernel_window);
 
  	wprintf(&shell_window,"WELCOME TO THE TOS SHELL\n");
- 	
+ 	//Print the divider
  	wprintf(&divider_window,"-------------------------------------------------------");
  	
- 	wprintf(&train_window,"\n"); 
- 	wprintf(&train_window," /$$$$$$$$ /$$$$$$   /$$$$$$\n"); 
-	wprintf(&train_window,"|__  $$__//$$__  $$ /$$__  $$\n"); 
-	wprintf(&train_window,"   | $$  | $$  \\ $$| $$  \\__/\n"); 
-	wprintf(&train_window,"   | $$  | $$  | $$|  $$$$$$ \n"); 
-	wprintf(&train_window,"   | $$  | $$  | $$ \\____  $$\n"); 
-	wprintf(&train_window,"   | $$  | $$  | $$ /$$  \\ $$\n"); 
-	wprintf(&train_window,"   | $$  |  $$$$$$/|  $$$$$$/\n"); 
-	wprintf(&train_window,"   |__/   \\______/  \\______/ \n"); 
+
+
+
+ 	printArt(); 
  	//init_train(&train_window);// For automatic startup of Train App
  	
 
